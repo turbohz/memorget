@@ -33,22 +33,39 @@ describe 'ValueProvider',->
 
 describe 'Memorget', ->
 
-	ttl  =200
-	clock=null
-	get  =memorget(new ValueProvider().get,null,ttl)
+	describe 'With TTL', ->
 
-	before ->clock=sinon.useFakeTimers()
-	after  ->clock.restore()
+		ttl  =200
+		clock=null
+		get  =memorget(new ValueProvider().get,null,ttl)
 
-	it 'should cache values younger than ttl',->
-		
-		assert.equal 1,get('foo')
-		assert.equal 1,get('foo')
-		clock.tick ttl-1
-		assert.equal 1,get('foo')
+		before ->clock=sinon.useFakeTimers()
+		after  ->clock.restore()
 
-	it 'should recompute values older than ttl',->
-		
-		assert.equal 1,get('bar')
-		clock.tick ttl+1
-		assert.equal 2,get('bar')
+		it 'should cache values younger than ttl',->
+			
+			assert.equal 1,get('foo')
+			assert.equal 1,get('foo')
+			clock.tick ttl-1
+			assert.equal 1,get('foo')
+
+		it 'should recompute values older than ttl',->
+			
+			assert.equal 1,get('bar')
+			clock.tick ttl+1
+			assert.equal 2,get('bar')
+
+	describe 'Without TTL', ->
+
+		clock=null
+		get  =memorget(new ValueProvider().get)
+
+		before ->clock=sinon.useFakeTimers()
+		after  ->clock.restore()
+
+		it 'should not forget cached values',->
+			
+			assert.equal 1,get('foo')
+			assert.equal 1,get('foo')
+			clock.tick 999999
+			assert.equal 1,get('foo')

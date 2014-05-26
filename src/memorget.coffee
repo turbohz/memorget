@@ -8,7 +8,7 @@
 
 identity=(x)->x
 
-module.exports=(func,hasher=identity,ttl=0)->
+module.exports=(func,hasher=identity,ttl=Infinity)->
 	
 	memoize=(args...)->
 		cache=memoize.cache
